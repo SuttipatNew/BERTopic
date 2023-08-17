@@ -390,7 +390,9 @@ class BERTopic:
 
         # Sort and Map Topic IDs by their frequency
         if not self.nr_topics:
+            logger.debug("_sort_mappings_by_frequency")
             documents = self._sort_mappings_by_frequency(documents)
+            logger.debug("_sort_mappings_by_frequency done")
 
         # Create documents from images if we have images only
         if documents.Document.values[0] is None:
@@ -408,18 +410,29 @@ class BERTopic:
             self._save_representative_docs(custom_documents)
         else:
              # Extract topics by calculating c-TF-IDF
+            logger.debug("_extract_topics")
             self._extract_topics(documents, embeddings=embeddings)
+            logger.debug("_extract_topics done")
 
             # Reduce topics
             if self.nr_topics:
+                logger.debug("_reduce_topics")
                 documents = self._reduce_topics(documents)
+                logger.debug("_reduce_topics done")
 
             # Save the top 3 most representative documents per topic
+            logger.debug("_save_representative_docs")
             self._save_representative_docs(documents)
+            logger.debug("_save_representative_docs done")
             
         # Resulting output
+        logger.debug("_map_probabilities")
         self.probabilities_ = self._map_probabilities(probabilities, original_topics=True)
+        logger.debug("_map_probabilities done")
+
+        logger.debug("documents.Topic.to_list()")
         predictions = documents.Topic.to_list()
+        logger.debug("documents.Topic.to_list() done")
 
         return predictions, self.probabilities_
 
